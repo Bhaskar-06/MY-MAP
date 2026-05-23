@@ -1,0 +1,109 @@
+{
+  "busRoutes": [
+    {
+      "routeId": "KSRTC-001",
+      "routeName": "Mysuru - T.Shettigeri",
+      "operator": "KSRTC",
+      "type": "bus",
+      "frequency": "Every 2 hours",
+      "firstBus": "06:00",
+      "lastBus": "20:00",
+      "stops": [
+        {
+          "stopId": "MYS-001",
+          "name": "Mysuru City Bus Stand",
+          "lat": 12.3051,
+          "lng": 76.6551,
+          "arrivalTime": "06:00",
+          "departureTime": "06:05"
+        },
+        {
+          "stopId": "HNS-001",
+          "name": "Hunsur Bus Stand",
+          "lat": 12.3017,
+          "lng": 76.2890,
+          "arrivalTime": "07:30",
+          "departureTime": "07:35"
+        },
+        {
+          "stopId": "KKP-001",
+          "name": "Kalkere",
+          "lat": 12.2800,
+          "lng": 76.1200,
+          "arrivalTime": "08:00",
+          "departureTime": "08:02"
+        },
+        {
+          "stopId": "TSH-001",
+          "name": "T.Shettigeri",
+          "lat": 12.1800,
+          "lng": 76.0500,
+          "arrivalTime": "09:00",
+          "departureTime": null
+        }
+      ],
+      "fare": {
+        "currency": "INR",
+        "amount": 85,
+        "type": "ordinary"
+      }
+    },
+    {
+      "routeId": "KSRTC-002",
+      "routeName": "Mysuru - Gonikoppal via Hunsur",
+      "operator": "KSRTC",
+      "type": "bus",
+      "frequency": "Every 3 hours",
+      "firstBus": "07:00",
+      "lastBus": "19:00",
+      "stops": [
+        {
+          "stopId": "MYS-001",
+          "name": "Mysuru City Bus Stand",
+          "lat": 12.3051,
+          "lng": 76.6551,
+          "arrivalTime": "07:00",
+          "departureTime": "07:05"
+        },
+        {
+          "stopId": "HNS-001",
+          "name": "Hunsur Bus Stand",
+          "lat": 12.3017,
+          "lng": 76.2890,
+          "arrivalTime": "08:20",
+          "departureTime": "08:25"
+        },
+        {
+          "stopId": "TSH-001",
+          "name": "T.Shettigeri",
+          "lat": 12.1800,
+          "lng": 76.0500,
+          "arrivalTime": "09:15",
+          "departureTime": "09:17"
+        },
+        {
+          "stopId": "GNK-001",
+          "name": "Gonikoppal",
+          "lat": 12.1500,
+          "lng": 75.9500,
+          "arrivalTime": "10:00",
+          "departureTime": null
+        }
+      ],
+      "fare": {
+        "currency": "INR",
+        "amount": 120,
+        "type": "ordinary"
+      }
+    }
+  ],
+  "commonAreas": {
+    "T.Shettigeri": {
+      "lat": 12.1800,
+      "lng": 76.0500,
+      "nearestBusStand": "Hunsur Bus Stand",
+      "localTransport": ["Auto", "Shared Jeep"],
+      "region": "Mysuru District, Karnataka"
+    }
+  }
+}

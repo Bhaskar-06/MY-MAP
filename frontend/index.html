@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/bus-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Public Transport Navigation - Find bus routes even where Google Maps fails" />
+    <title>TransitMap - Public Transport Guide</title>
+    
+    <!-- Prevent Leaflet icon issues -->
+    <style>
+      .leaflet-default-icon-path {
+        background-image: url('https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png');
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

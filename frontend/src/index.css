@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Leaflet CSS */
+@import 'leaflet/dist/leaflet.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Custom Route Line Styles */
+.route-car {
+  stroke: #1a73e8;
+  stroke-width: 5;
+  stroke-dasharray: none;
+}
+
+.route-walk {
+  stroke: #34a853;
+  stroke-width: 3;
+  stroke-dasharray: 10, 5;
+}
+
+.route-transit {
+  stroke: #9c27b0;
+  stroke-width: 5;
+  stroke-dasharray: none;
+}
+
+/* Custom Marker Styles */
+.custom-marker {
+  background: #1a73e8;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Panel Animations */
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Search bar styling */
+.search-container {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Transport mode buttons */
+.mode-btn {
+  @apply flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200;
+}
+
+.mode-btn.active {
+  @apply bg-blue-100 text-blue-600;
+}
+
+.mode-btn:hover {
+  @apply bg-gray-100;
+}
+
+/* Bus stop marker */
+.bus-stop-marker {
+  background: #ff5722;
+  color: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Route step items */
+.route-step {
+  @apply flex items-start gap-3 p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}

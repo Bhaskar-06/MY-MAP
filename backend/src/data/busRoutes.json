@@ -1,0 +1,113 @@
+{
+  "busRoutes": [
+    {
+      "routeId": "KSRTC-MYS-TSH-001",
+      "routeName": "Mysuru - T.Shettigeri",
+      "operator": "KSRTC Karnataka",
+      "type": "ordinary",
+      "frequency": "Every 2 hours",
+      "firstBus": "06:00",
+      "lastBus": "20:00",
+      "totalDistance": 95,
+      "region": "Mysuru District",
+      "stops": [
+        {
+          "stopId": "MYS-CENTRAL",
+          "name": "Mysuru Central Bus Stand",
+          "lat": 12.3051,
+          "lng": 76.6551,
+          "arrivalTime": null,
+          "departureTime": "06:00",
+          "landmark": "Near Railway Station"
+        },
+        {
+          "stopId": "PERIYAPATNA",
+          "name": "Periyapatna Bus Stand",
+          "lat": 12.3317,
+          "lng": 76.1658,
+          "arrivalTime": "07:15",
+          "departureTime": "07:20",
+          "landmark": "Town center"
+        },
+        {
+          "stopId": "HUNSUR",
+          "name": "Hunsur Bus Stand",
+          "lat": 12.3017,
+          "lng": 76.2890,
+          "arrivalTime": "07:45",
+          "departureTime": "07:50",
+          "landmark": "Near NH-275"
+        },
+        {
+          "stopId": "T-SHETTIGERI",
+          "name": "T. Shettigeri",
+          "lat": 12.1800,
+          "lng": 76.0500,
+          "arrivalTime": "09:00",
+          "departureTime": null,
+          "landmark": "Village center"
+        }
+      ],
+      "fare": {
+        "currency": "INR",
+        "amount": 85,
+        "type": "ordinary",
+        "perKm": 0.89
+      },
+      "serviceType": "ordinary",
+      "amenities": [],
+      "contact": "1800-425-1900"
+    },
+    {
+      "routeId": "KSRTC-MYS-GNK-001",
+      "routeName": "Mysuru - Gonikoppal Express",
+      "operator": "KSRTC Karnataka",
+      "type": "express",
+      "frequency": "Every 3 hours",
+      "firstBus": "07:00",
+      "lastBus": "19:00",
+      "totalDistance": 135,
+      "region": "Mysuru-Kodagu",
+      "stops": [
+        {
+          "stopId": "MYS-CENTRAL",
+          "name": "Mysuru Central Bus Stand",
+          "lat": 12.3051,
+          "lng": 76.6551,
+          "arrivalTime": null,
+          "departureTime": "07:00"
+        },
+        {
+          "stopId": "HUNSUR",
+          "name": "Hunsur",
+          "lat": 12.3017,
+          "lng": 76.2890,
+          "arrivalTime": "08:30",
+          "departureTime": "08:35"
+        },
+        {
+          "stopId": "T-SHETTIGERI",
+          "name": "T. Shettigeri",
+          "lat": 12.1800,
+          "lng": 76.0500,
+          "arrivalTime": "09:30",
+          "departureTime": "09:32"
+        },
+        {
+          "stopId": "GONIKOPPAL",
+          "name": "Gonikoppal",
+          "lat": 12.1500,
+          "lng": 75.9500,
+          "arrivalTime": "10:30",
+          "departureTime": null
+        }
+      ],
+      "fare": {
+        "currency": "INR",
+        "amount": 130,
+        "type": "express",
+        "perKm": 0.96
+      }
+    }
+  ]
+}
