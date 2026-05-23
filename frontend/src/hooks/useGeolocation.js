@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { reverseGeocode } from '../services/mapService';
 
 export const useGeolocation = () => {
@@ -8,44 +8,27 @@ export const useGeolocation = () => {
 
   const getCurrentLocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported');
+      setError('Geolocation not supported');
       return;
     }
 
     setLoading(true);
-    setError(null);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        
-        try {
-          const address = await reverseGeocode(latitude, longitude);
-          setLocation({
-            lat: latitude,
-            lng: longitude,
-            name: address?.name || 'Your Location',
-            fullName: address?.fullName || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-          });
-        } catch {
-          setLocation({
-            lat: latitude,
-            lng: longitude,
-            name: 'Your Location',
-            fullName: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-          });
-        }
-        
+        const address = await reverseGeocode(latitude, longitude);
+        setLocation({
+          lat: latitude,
+          lng: longitude,
+          name: address?.name || 'My Location',
+          fullName: address?.fullName || 'Current Location',
+        });
         setLoading(false);
       },
       (err) => {
         setError(err.message);
         setLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
       }
     );
   }, []);

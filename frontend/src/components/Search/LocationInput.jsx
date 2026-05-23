@@ -1,45 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, X, Loader, Navigation } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import { searchLocation } from '../../services/mapService';
-import { useGeolocation } from '../../hooks/useGeolocation';
 
-const LocationInput = ({ 
-  placeholder, 
-  value, 
-  onChange, 
-  onSelect, 
-  isOrigin = false,
-  icon 
-}) => {
+const LocationInput = ({ placeholder, value, onSelect, isOrigin }) => {
   const [query, setQuery] = useState(value?.name || '');
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const { getCurrentLocation, loading: geoLoading } = useGeolocation();
-  const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
-  useEffect(() => {
-    if (value?.name) {
-      setQuery(value.name);
-    }
-  }, [value]);
-
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const val = e.target.value;
     setQuery(val);
-    
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    
+    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (val.length > 2) {
-      setIsSearching(true);
       debounceRef.current = setTimeout(async () => {
-        const results = await searchLocation(val);
-        setResults(results);
+        const res = await searchLocation(val);
+        setResults(res);
         setShowResults(true);
-        setIsSearching(false);
       }, 500);
     } else {
       setResults([]);
@@ -47,99 +23,54 @@ const LocationInput = ({
     }
   };
 
-  const handleSelect = (location) => {
-    setQuery(location.name);
+  const handleSelect = (loc) => {
+    setQuery(loc.name);
     setShowResults(false);
-    onSelect(location);
+    onSelect(loc);
   };
 
-  const handleUseMyLocation = async () => {
-    const location = await new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { default: mapService } = await import('../../services/mapService');
-          const address = await mapService.reverseGeocode(
-            pos.coords.latitude, 
-            pos.coords.longitude
-          );
-          resolve({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            name: 'My Location',
-            fullName: address?.fullName || 'Current Location',
-          });
-        },
-        () => resolve(null)
-      );
+  const handleMyLocation = () => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const loc = {
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        name: 'My Location',
+        fullName: 'Current Location',
+      };
+      setQuery('My Location');
+      onSelect(loc);
     });
-    
-    if (location) {
-      handleSelect(location);
-    }
-  };
-
-  const clearInput = () => {
-    setQuery('');
-    setResults([]);
-    onSelect(null);
-    inputRef.current?.focus();
   };
 
   return (
     <div className="relative">
-      <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 
-                      border border-gray-200 focus-within:border-blue-400 
-                      focus-within:bg-white transition-all">
-        {/* Icon */}
-        <div className={`w-3 h-3 rounded-full flex-shrink-0 
-          ${isOrigin ? 'bg-blue-500' : 'bg-red-500'}`} 
-        />
-        
-        {/* Input */}
+      <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 border border-gray-200">
+        <div className={`w-3 h-3 rounded-full flex-shrink-0 ${isOrigin ? 'bg-blue-500' : 'bg-red-500'}`} />
         <input
-          ref={inputRef}
           type="text"
           value={query}
-          onChange={handleInputChange}
+          onChange={handleChange}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-sm text-gray-700 
-                     placeholder-gray-400 outline-none"
+          className="flex-1 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
           onFocus={() => results.length > 0 && setShowResults(true)}
         />
-        
-        {/* Clear / Loading */}
-        {isSearching ? (
-          <Loader size={14} className="text-gray-400 animate-spin" />
-        ) : query ? (
-          <button onClick={clearInput}>
-            <X size={14} className="text-gray-400 hover:text-gray-600" />
-          </button>
-        ) : isOrigin ? (
-          <button 
-            onClick={handleUseMyLocation}
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <Navigation size={14} />
-          </button>
-        ) : null}
+        {isOrigin && !query && (
+          <button onClick={handleMyLocation} className="text-blue-500 text-xs">📍</button>
+        )}
+        {query && (
+          <button onClick={() => { setQuery(''); onSelect(null); }} className="text-gray-400 text-xs">✕</button>
+        )}
       </div>
-      
-      {/* Search Results Dropdown */}
+
       {showResults && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl 
-                        shadow-lg border border-gray-100 z-50 max-h-48 overflow-y-auto">
-          {results.map((result) => (
-            <button
-              key={result.id}
-              className="w-full flex items-start gap-3 px-4 py-3 
-                         hover:bg-blue-50 text-left transition-colors border-b 
-                         border-gray-50 last:border-0"
-              onClick={() => handleSelect(result)}
-            >
-              <MapPin size={14} className="text-red-500 mt-0.5 flex-shrink-0" />
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border z-50 max-h-48 overflow-y-auto">
+          {results.map(r => (
+            <button key={r.id} onClick={() => handleSelect(r)}
+              className="w-full flex items-start gap-2 px-4 py-2 hover:bg-blue-50 text-left border-b last:border-0">
+              <span className="text-red-500 mt-0.5">📍</span>
               <div>
-                <p className="text-sm font-medium text-gray-800">{result.name}</p>
-                <p className="text-xs text-gray-500 truncate">{result.fullName}</p>
+                <p className="text-sm font-medium">{r.name}</p>
+                <p className="text-xs text-gray-400 truncate">{r.fullName}</p>
               </div>
             </button>
           ))}

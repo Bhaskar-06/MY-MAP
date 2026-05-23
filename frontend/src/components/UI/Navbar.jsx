@@ -1,5 +1,4 @@
 import React from 'react';
-import { MapPin, Bus, Navigation } from 'lucide-react';
 
 const Navbar = () => {
   return (
@@ -7,7 +6,7 @@ const Navbar = () => {
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <Bus size={18} className="text-white" />
+            <span className="text-white text-sm">🚌</span>
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-800">TransitMap</h1>

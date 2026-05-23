@@ -9,18 +9,13 @@ import { useMap } from './context/MapContext';
 
 const AppContent = () => {
   const { isLoading } = useMap();
-  
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Base Map Layer */}
       <MapContainer />
-      
-      {/* UI Overlays */}
       <Navbar />
       <SearchBar />
       <RoutePanel />
-      
-      {/* Loading State */}
       {isLoading && <LoadingSpinner />}
     </div>
   );

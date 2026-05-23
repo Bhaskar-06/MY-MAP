@@ -4,52 +4,24 @@ import { useMap } from '../../context/MapContext';
 
 const RouteLayer = () => {
   const { routes, selectedRoute } = useMap();
-  
-  const getRouteStyle = (route, isSelected) => {
-    const styles = {
-      car: {
-        color: isSelected ? '#1a73e8' : '#90caf9',
-        weight: isSelected ? 6 : 3,
-        opacity: isSelected ? 0.9 : 0.4,
-        dashArray: null,
-      },
-      walk: {
-        color: isSelected ? '#34a853' : '#a5d6a7',
-        weight: isSelected ? 4 : 2,
-        opacity: isSelected ? 0.9 : 0.4,
-        dashArray: '10, 8',
-      },
-      transit: {
-        color: isSelected ? '#9c27b0' : '#ce93d8',
-        weight: isSelected ? 6 : 3,
-        opacity: isSelected ? 0.9 : 0.4,
-        dashArray: null,
-      },
+
+  const getStyle = (route, isSelected) => {
+    const base = { car: '#1a73e8', walk: '#34a853', transit: '#9c27b0' };
+    return {
+      color: base[route.mode] || '#666',
+      weight: isSelected ? 6 : 3,
+      opacity: isSelected ? 0.9 : 0.3,
+      dashArray: route.mode === 'walk' ? '10,8' : null,
     };
-    
-    return styles[route.mode] || styles.transit;
   };
 
   return (
     <>
-      {/* Background routes (not selected) */}
-      {routes
-        .filter(r => r !== selectedRoute && r.geometry?.length > 1)
-        .map((route, idx) => (
-          <Polyline
-            key={`bg-route-${idx}`}
-            positions={route.geometry}
-            pathOptions={getRouteStyle(route, false)}
-          />
-        ))
-      }
-      
-      {/* Selected route (on top) */}
+      {routes.filter(r => r !== selectedRoute && r.geometry?.length > 1).map((route, i) => (
+        <Polyline key={`bg-${i}`} positions={route.geometry} pathOptions={getStyle(route, false)} />
+      ))}
       {selectedRoute?.geometry?.length > 1 && (
-        <Polyline
-          positions={selectedRoute.geometry}
-          pathOptions={getRouteStyle(selectedRoute, true)}
-        />
+        <Polyline positions={selectedRoute.geometry} pathOptions={getStyle(selectedRoute, true)} />
       )}
     </>
   );

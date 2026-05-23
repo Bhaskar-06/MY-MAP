@@ -9,34 +9,30 @@ export const MapProvider = ({ children }) => {
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [mapCenter, setMapCenter] = useState([12.2958, 76.6394]); // Mysuru
+  const [mapCenter, setMapCenter] = useState([12.2958, 76.6394]);
   const [mapZoom, setMapZoom] = useState(10);
   const [busStops, setBusStops] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
 
   const clearRoutes = useCallback(() => {
     setRoutes([]);
     setSelectedRoute(null);
   }, []);
 
-  const value = {
-    origin, setOrigin,
-    destination, setDestination,
-    selectedMode, setSelectedMode,
-    routes, setRoutes,
-    selectedRoute, setSelectedRoute,
-    isLoading, setIsLoading,
-    mapCenter, setMapCenter,
-    mapZoom, setMapZoom,
-    busStops, setBusStops,
-    showPanel, setShowPanel,
-    searchResults, setSearchResults,
-    clearRoutes,
-  };
-
   return (
-    <MapContext.Provider value={value}>
+    <MapContext.Provider value={{
+      origin, setOrigin,
+      destination, setDestination,
+      selectedMode, setSelectedMode,
+      routes, setRoutes,
+      selectedRoute, setSelectedRoute,
+      isLoading, setIsLoading,
+      mapCenter, setMapCenter,
+      mapZoom, setMapZoom,
+      busStops, setBusStops,
+      showPanel, setShowPanel,
+      clearRoutes,
+    }}>
       {children}
     </MapContext.Provider>
   );
@@ -44,8 +40,6 @@ export const MapProvider = ({ children }) => {
 
 export const useMap = () => {
   const context = useContext(MapContext);
-  if (!context) {
-    throw new Error('useMap must be used within MapProvider');
-  }
+  if (!context) throw new Error('useMap must be used within MapProvider');
   return context;
 };
