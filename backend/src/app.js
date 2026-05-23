@@ -9,29 +9,53 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: '*',
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-const transitRoutes = require('./routes/transit');
-const directionsRoutes = require('./routes/directions');
-const searchRoutes = require('./routes/search');
-
-app.use('/api/transit', transitRoutes);
-app.use('/api/directions', directionsRoutes);
-app.use('/api/search', searchRoutes);
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'TransitMap API running',
-    version: '1.0.0' 
+// Health check - TEST THIS FIRST
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'TransitMap API is running!',
+    version: '1.0.0'
   });
 });
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'TransitMap API running',
+    version: '1.0.0'
+  });
+});
+
+// Routes - Load safely with try/catch
+try {
+  const transitRoutes = require('./routes/transit');
+  app.use('/api/transit', transitRoutes);
+  console.log('✅ Transit routes loaded');
+} catch (e) {
+  console.error('❌ Transit routes failed:', e.message);
+}
+
+try {
+  const directionsRoutes = require('./routes/directions');
+  app.use('/api/directions', directionsRoutes);
+  console.log('✅ Directions routes loaded');
+} catch (e) {
+  console.error('❌ Directions routes failed:', e.message);
+}
+
+try {
+  const searchRoutes = require('./routes/search');
+  app.use('/api/search', searchRoutes);
+  console.log('✅ Search routes loaded');
+} catch (e) {
+  console.error('❌ Search routes failed:', e.message);
+}
 
 // 404 handler
 app.use('*', (req, res) => {
