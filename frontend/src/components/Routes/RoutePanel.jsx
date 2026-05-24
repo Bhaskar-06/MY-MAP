@@ -1,196 +1,229 @@
 import React, { useState } from 'react';
 import { useMap } from '../../context/MapContext';
-import { formatDistance, formatDuration } from '../../services/routeService';
 
-const ModeTab = ({ route, isSelected, onClick }) => {
-  const icons = {
-    transit: '🚌', bus: '🚌', train: '🚂', metro: '🚇',
-    car: '🚗', walk: '🚶', cab: '🚕', multimodal: '🗺️'
-  };
-  const icon = icons[route.subMode || route.mode] || '📍';
-
-  return (
-    <button onClick={onClick}
-      className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-3 py-2
-                 rounded-xl border-2 text-xs transition-all min-w-[60px]
-                 ${isSelected ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-600'}`}>
-      <span className="text-lg">{icon}</span>
-      <span className="font-semibold">{route.title?.split(' ')[0] || route.mode}</span>
-      <span className="text-gray-500 text-xs">
-        {Math.round((route.duration || 0) / 60)}h {(route.duration || 0) % 60}m
-      </span>
-    </button>
-  );
+const formatMins = (mins) => {
+  if (!mins) return 'N/A';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
 };
 
-const StepCard = ({ step, index }) => {
-  const [showDetails, setShowDetails] = useState(false);
+const StepItem = ({ step, index }) => {
+  const [expanded, setExpanded] = useState(false);
 
-  const bgColors = {
-    walk: 'bg-green-50 border-green-200',
-    bus: 'bg-purple-50 border-purple-200',
-    train: 'bg-red-50 border-red-200',
-    metro: 'bg-blue-50 border-blue-200',
-    auto: 'bg-orange-50 border-orange-200',
-    cab: 'bg-yellow-50 border-yellow-200',
-    taxi: 'bg-yellow-50 border-yellow-200',
-    transit: 'bg-indigo-50 border-indigo-200',
-    local: 'bg-orange-50 border-orange-200',
+  const colors = {
+    walk: '#4caf50', bus: '#9c27b0', train: '#f44336',
+    metro: '#2196f3', auto: '#ff9800', cab: '#ffc107',
+    taxi: '#ffc107', transit: '#673ab7', local: '#ff5722',
   };
 
-  const bg = bgColors[step.type] || 'bg-gray-50 border-gray-200';
+  const color = colors[step.type] || '#666';
 
   return (
-    <div className={`border rounded-xl p-3 mb-2 ${bg}`}>
-      <div className="flex items-start gap-3">
-        {/* Step Number + Icon */}
-        <div className="flex flex-col items-center gap-1">
-          <div className="w-7 h-7 rounded-full bg-white shadow-sm flex items-center
-                          justify-center text-xs font-bold text-gray-600">
-            {index + 1}
-          </div>
-          <span className="text-xl">{step.icon}</span>
+    <div style={{
+      background: 'white', borderRadius: '12px', marginBottom: '8px',
+      border: `1px solid ${color}30`, overflow: 'hidden',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+    }}>
+      {/* Step Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', padding: '12px', gap: '12px' }}>
+        {/* Number + Icon */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <div style={{
+            width: '24px', height: '24px', borderRadius: '50%',
+            background: color, color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '11px', fontWeight: '700', flexShrink: 0
+          }}>{index + 1}</div>
+          <span style={{ fontSize: '22px' }}>{step.icon}</span>
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-800 text-sm">{step.instruction}</p>
-          {step.detail && <p className="text-xs text-gray-600 mt-0.5">{step.detail}</p>}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '13px', fontWeight: '700', color: '#111827' }}>
+            {step.instruction}
+          </div>
+          {step.detail && (
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '3px' }}>
+              {step.detail}
+            </div>
+          )}
 
-          {/* Duration + Fare */}
-          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+          {/* Chips */}
+          <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
             {step.duration && (
-              <span className="text-xs bg-white px-2 py-0.5 rounded-full text-gray-600 border">
-                ⏱ {step.duration}min
-              </span>
+              <span style={{
+                background: '#f3f4f6', padding: '3px 8px',
+                borderRadius: '20px', fontSize: '11px', color: '#374151'
+              }}>⏱ {step.duration}min</span>
             )}
-            {step.fare && (
-              <span className="text-xs bg-white px-2 py-0.5 rounded-full text-gray-600 border">
-                💰 ₹{step.fare.amount} ({step.fare.type})
-              </span>
+            {step.fare?.amount && (
+              <span style={{
+                background: '#dcfce7', padding: '3px 8px',
+                borderRadius: '20px', fontSize: '11px', color: '#166534'
+              }}>💰 ₹{step.fare.amount}</span>
             )}
             {step.distance && (
-              <span className="text-xs bg-white px-2 py-0.5 rounded-full text-gray-600 border">
-                📏 {(step.distance / 1000).toFixed(1)}km
-              </span>
+              <span style={{
+                background: '#dbeafe', padding: '3px 8px',
+                borderRadius: '20px', fontSize: '11px', color: '#1e40af'
+              }}>📏 {(step.distance/1000).toFixed(1)}km</span>
             )}
           </div>
 
-          {/* From - To for bus/train */}
+          {/* From-To */}
           {(step.from || step.to) && (
-            <div className="mt-2 bg-white rounded-lg p-2 border">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"/>
-                  <div className="w-0.5 h-4 bg-gray-300"/>
-                  <div className="w-2 h-2 bg-red-500 rounded-full"/>
+            <div style={{
+              background: '#f9fafb', borderRadius: '8px',
+              padding: '8px', marginTop: '8px', border: '1px solid #e5e7eb'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e' }}/>
+                  <div style={{ width: '1px', height: '16px', background: '#d1d5db' }}/>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}/>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-gray-700 font-medium">{step.from}</span>
-                  <span className="text-gray-700 font-medium">{step.to}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {step.from && <span style={{ color: '#374151', fontWeight: '600' }}>{step.from}</span>}
+                  {step.to && <span style={{ color: '#374151', fontWeight: '600' }}>{step.to}</span>}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Operator Info */}
+          {/* Operator */}
           {step.operatorDetails && (
-            <div className="mt-2 bg-white rounded-lg p-2 border">
-              <p className="text-xs font-bold text-gray-700">{step.operatorDetails.name}</p>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <div style={{
+              background: '#faf5ff', borderRadius: '8px',
+              padding: '8px', marginTop: '8px', border: '1px solid #e9d5ff'
+            }}>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#6d28d9', marginBottom: '4px' }}>
+                {step.operatorDetails.name}
+              </div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {step.operatorDetails.helpline && (
-                  <a href={`tel:${step.operatorDetails.helpline}`}
-                    className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                    📞 {step.operatorDetails.helpline}
-                  </a>
+                  <a href={`tel:${step.operatorDetails.helpline}`} style={{
+                    background: '#ede9fe', color: '#7c3aed', padding: '3px 8px',
+                    borderRadius: '20px', fontSize: '11px', textDecoration: 'none',
+                    fontWeight: '600'
+                  }}>📞 {step.operatorDetails.helpline}</a>
                 )}
                 {step.operatorDetails.website && (
                   <a href={`https://${step.operatorDetails.website}`} target="_blank" rel="noreferrer"
-                    className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                    🌐 {step.operatorDetails.website}
-                  </a>
+                    style={{
+                      background: '#dbeafe', color: '#1d4ed8', padding: '3px 8px',
+                      borderRadius: '20px', fontSize: '11px', textDecoration: 'none',
+                      fontWeight: '600'
+                    }}>🌐 Website</a>
                 )}
               </div>
             </div>
           )}
 
-          {/* Providers for cab */}
+          {/* Cab Providers */}
           {step.providers && (
-            <div className="mt-2 space-y-1">
+            <div style={{ marginTop: '8px' }}>
               {step.providers.map((p, i) => (
-                <div key={i} className="flex items-center justify-between bg-white
-                                        rounded-lg px-3 py-1.5 border text-xs">
-                  <span className="font-medium">{p.icon} {p.name}</span>
-                  <span className="text-green-600 font-bold">{p.fare}</span>
+                <div key={i} style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'center', padding: '6px 10px',
+                  background: '#fffbeb', borderRadius: '8px',
+                  marginBottom: '4px', border: '1px solid #fde68a'
+                }}>
+                  <span style={{ fontSize: '12px', fontWeight: '600' }}>{p.icon} {p.name}</span>
+                  <span style={{ fontSize: '12px', color: '#059669', fontWeight: '700' }}>{p.fare}</span>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Alternatives */}
+          {/* Options */}
           {step.alternatives && (
-            <div className="mt-2">
-              <p className="text-xs text-gray-500 mb-1">Also available:</p>
-              <div className="flex flex-wrap gap-1">
-                {step.alternatives.map((a, i) => (
-                  <span key={i} className="text-xs bg-white px-2 py-0.5 rounded-full border text-gray-600">
-                    {a.mode}: {a.fare}
-                  </span>
-                ))}
-              </div>
+            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
+              {step.alternatives.map((a, i) => (
+                <span key={i} style={{
+                  background: '#f3f4f6', padding: '3px 8px',
+                  borderRadius: '20px', fontSize: '11px', color: '#374151'
+                }}>{a.mode}: {a.fare}</span>
+              ))}
             </div>
           )}
 
-          {/* Options */}
-          {step.options && !Array.isArray(step.options[0]) && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {step.options.map((opt, i) => (
-                <span key={i} className="text-xs bg-white px-2 py-0.5 rounded-full border text-gray-600">
-                  {typeof opt === 'string' ? opt : `${opt.type}: ${opt.fare}`}
-                </span>
+          {/* Tips Toggle */}
+          {step.tips && (
+            <button onClick={() => setExpanded(!expanded)} style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '11px', color: '#2563eb', marginTop: '6px',
+              padding: '2px 0', fontWeight: '600'
+            }}>
+              💡 {expanded ? '▲ Hide Tips' : '▼ Show Tips'}
+            </button>
+          )}
+          {expanded && step.tips && (
+            <div style={{
+              background: '#fffbeb', borderRadius: '8px',
+              padding: '8px', marginTop: '6px', border: '1px solid #fde68a'
+            }}>
+              {step.tips.map((tip, i) => (
+                <div key={i} style={{ fontSize: '11px', color: '#92400e', marginBottom: '3px' }}>
+                  💡 {tip}
+                </div>
               ))}
             </div>
           )}
 
           {/* Booking Info */}
           {step.bookingInfo && (
-            <div className="mt-2 bg-blue-50 rounded-lg p-2">
-              <p className="text-xs font-medium text-blue-800 mb-1">📱 Book via:</p>
-              <div className="flex flex-wrap gap-1">
+            <div style={{
+              background: '#eff6ff', borderRadius: '8px',
+              padding: '8px', marginTop: '8px', border: '1px solid #bfdbfe'
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: '#1e40af', marginBottom: '4px' }}>
+                📱 How to Book:
+              </div>
+              <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                 {step.bookingInfo.app && (
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                    {step.bookingInfo.app}
-                  </span>
+                  <span style={{
+                    background: '#dbeafe', color: '#1d4ed8', padding: '3px 8px',
+                    borderRadius: '20px', fontSize: '11px', fontWeight: '600'
+                  }}>{step.bookingInfo.app}</span>
                 )}
-                {step.bookingInfo.online && (
-                  <a href={`https://${step.bookingInfo.online}`} target="_blank" rel="noreferrer"
-                    className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                    {step.bookingInfo.online}
-                  </a>
+                {step.bookingInfo.helpline && (
+                  <a href={`tel:${step.bookingInfo.helpline}`} style={{
+                    background: '#dcfce7', color: '#166534', padding: '3px 8px',
+                    borderRadius: '20px', fontSize: '11px', textDecoration: 'none',
+                    fontWeight: '600'
+                  }}>📞 {step.bookingInfo.helpline}</a>
                 )}
                 {step.bookingInfo.counter && (
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                    {step.bookingInfo.counter}
-                  </span>
+                  <span style={{
+                    background: '#f3f4f6', color: '#374151', padding: '3px 8px',
+                    borderRadius: '20px', fontSize: '11px'
+                  }}>🎫 {step.bookingInfo.counter}</span>
                 )}
               </div>
             </div>
           )}
 
-          {/* Tips */}
-          {step.tips && (
-            <div className="mt-2">
-              <button onClick={() => setShowDetails(!showDetails)}
-                className="text-xs text-blue-600 font-medium">
-                {showDetails ? '▲ Hide tips' : '▼ Show tips'}
-              </button>
-              {showDetails && (
-                <div className="mt-1 bg-amber-50 rounded-lg p-2 border border-amber-100">
-                  {step.tips.map((tip, i) => (
-                    <p key={i} className="text-xs text-amber-800">💡 {tip}</p>
-                  ))}
+          {/* Fare by class for trains */}
+          {step.fareByClass && (
+            <div style={{
+              background: '#fff7ed', borderRadius: '8px',
+              padding: '8px', marginTop: '8px', border: '1px solid #fed7aa'
+            }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: '#9a3412', marginBottom: '4px' }}>
+                🎫 Fare by Class:
+              </div>
+              {Object.entries(step.fareByClass).map(([cls, fare]) => (
+                <div key={cls} style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  fontSize: '11px', padding: '2px 0',
+                  borderBottom: '1px solid #fed7aa'
+                }}>
+                  <span style={{ color: '#7c2d12' }}>{cls}</span>
+                  <span style={{ fontWeight: '700', color: '#ea580c' }}>₹{fare}</span>
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>
@@ -199,77 +232,76 @@ const StepCard = ({ step, index }) => {
   );
 };
 
-const RouteCard = ({ route }) => {
-  const [showSteps, setShowSteps] = useState(true);
+const RouteCard = ({ route, isSelected }) => {
+  const [showSteps, setShowSteps] = useState(isSelected);
 
-  const modeColors = {
-    transit: 'bg-purple-600', bus: 'bg-purple-600',
-    train: 'bg-red-600', metro: 'bg-blue-600',
-    car: 'bg-blue-500', walk: 'bg-green-500',
-    cab: 'bg-yellow-500', multimodal: 'bg-indigo-600'
+  const headerColors = {
+    bus: 'linear-gradient(135deg, #7c3aed, #9c27b0)',
+    train: 'linear-gradient(135deg, #dc2626, #ef4444)',
+    metro: 'linear-gradient(135deg, #1d4ed8, #2196f3)',
+    car: 'linear-gradient(135deg, #0369a1, #0ea5e9)',
+    walk: 'linear-gradient(135deg, #166534, #22c55e)',
+    cab: 'linear-gradient(135deg, #92400e, #f59e0b)',
+    multimodal: 'linear-gradient(135deg, #4338ca, #6366f1)',
   };
 
-  const bgColor = modeColors[route.subMode || route.mode] || 'bg-gray-600';
+  const bg = headerColors[route.subMode || route.mode] || headerColors.bus;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-3 overflow-hidden">
-      {/* Route Header */}
-      <div className={`${bgColor} p-3 text-white`}>
-        <div className="flex items-center justify-between">
+    <div style={{
+      borderRadius: '16px', overflow: 'hidden', marginBottom: '12px',
+      boxShadow: isSelected ? '0 4px 20px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.08)',
+      border: isSelected ? '2px solid #3b82f6' : '2px solid transparent'
+    }}>
+      {/* Header */}
+      <div style={{ background: bg, padding: '14px 16px', color: 'white' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h3 className="font-bold text-sm">{route.title}</h3>
-            <p className="text-xs opacity-90 mt-0.5">{route.summary}</p>
+            <div style={{ fontSize: '15px', fontWeight: '800' }}>{route.title}</div>
+            <div style={{ fontSize: '12px', opacity: 0.9, marginTop: '3px' }}>{route.summary}</div>
           </div>
-          <div className="text-right">
-            {route.fare > 0 && (
-              <p className="text-lg font-bold">₹{route.fare}+</p>
-            )}
-            {route.fare === 0 && (
-              <p className="text-sm font-bold">Free</p>
-            )}
-            <p className="text-xs opacity-75">
-              {route.bookingRequired ? '📱 Book Required' : '🎫 No Booking'}
-            </p>
-          </div>
+          {route.fare > 0 && (
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '20px', fontWeight: '800' }}>₹{route.fare}+</div>
+              <div style={{ fontSize: '10px', opacity: 0.8 }}>estimated</div>
+            </div>
+          )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="flex gap-3 mt-2">
-          <span className="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">
-            ⏱ {Math.floor((route.duration || 0) / 60)}h {(route.duration || 0) % 60}m
-          </span>
-          <span className="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">
-            📏 {route.distance ? `${(route.distance/1000).toFixed(0)}km` : 'N/A'}
-          </span>
-          {route.reliability && (
-            <span className="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">
-              ✅ {route.reliability}
-            </span>
-          )}
+        {/* Stats Row */}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
+          {[
+            { label: `⏱ ${formatMins(route.duration)}` },
+            { label: route.distance ? `📏 ${(route.distance/1000).toFixed(0)}km` : null },
+            { label: route.reliability ? `✅ ${route.reliability}` : null },
+            { label: route.bookingRequired ? '📱 Booking Needed' : '🎫 Walk-in' },
+          ].filter(s => s.label).map((s, i) => (
+            <span key={i} style={{
+              background: 'rgba(255,255,255,0.2)', padding: '4px 10px',
+              borderRadius: '20px', fontSize: '11px', fontWeight: '600'
+            }}>{s.label}</span>
+          ))}
         </div>
       </div>
 
-      {/* Steps Toggle */}
-      <button onClick={() => setShowSteps(!showSteps)}
-        className="w-full px-4 py-2 text-xs text-gray-500 hover:bg-gray-50
-                   flex items-center justify-between border-b">
-        <span className="font-medium">{route.steps?.length || 0} Steps</span>
-        <span>{showSteps ? '▲ Hide' : '▼ Show steps'}</span>
+      {/* Toggle Steps */}
+      <button onClick={() => setShowSteps(!showSteps)} style={{
+        width: '100%', padding: '10px 16px',
+        background: '#f9fafb', border: 'none', borderBottom: '1px solid #e5e7eb',
+        cursor: 'pointer', display: 'flex', justifyContent: 'space-between',
+        alignItems: 'center', fontSize: '12px', color: '#6b7280',
+        fontWeight: '600', fontFamily: 'inherit'
+      }}>
+        <span>📋 {route.steps?.length || 0} Steps</span>
+        <span>{showSteps ? '▲ Hide' : '▼ Show Steps'}</span>
       </button>
 
       {/* Steps */}
-      {showSteps && route.steps && (
-        <div className="p-3">
-          {route.steps.map((step, i) => (
-            <StepCard key={i} step={step} index={i} />
+      {showSteps && (
+        <div style={{ padding: '12px', background: '#f9fafb' }}>
+          {route.steps?.map((step, i) => (
+            <StepItem key={i} step={step} index={i} />
           ))}
-        </div>
-      )}
-
-      {/* Note */}
-      {route.note && (
-        <div className="mx-3 mb-3 bg-blue-50 rounded-xl p-2 border border-blue-100">
-          <p className="text-xs text-blue-700">ℹ️ {route.note}</p>
         </div>
       )}
     </div>
@@ -279,127 +311,205 @@ const RouteCard = ({ route }) => {
 const RoutePanel = () => {
   const {
     routes, selectedRoute, setSelectedRoute,
-    showPanel, setShowPanel, origin, destination,
-    clearRoutes
+    showPanel, clearRoutes, origin, destination
   } = useMap();
 
-  const [panelHeight, setPanelHeight] = useState('60vh');
+  const [activeRoute, setActiveRoute] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
 
   if (!showPanel || routes.length === 0) return null;
 
-  const transitRoutes = routes.filter(r => r.mode === 'transit' || r.mode === 'cab');
-  const otherRoutes = routes.filter(r => r.mode === 'car' || r.mode === 'walk');
+  const handleRouteSelect = (route, index) => {
+    setSelectedRoute(route);
+    setActiveRoute(index);
+  };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-40 rounded-t-3xl shadow-2xl
-                    glass-panel flex flex-col slide-up"
-         style={{ maxHeight: panelHeight }}>
-
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      zIndex: 1000, background: 'white',
+      borderRadius: '24px 24px 0 0',
+      boxShadow: '0 -8px 32px rgba(0,0,0,0.2)',
+      maxHeight: collapsed ? '80px' : '75vh',
+      overflow: 'hidden',
+      transition: 'max-height 0.3s ease',
+      animation: 'slideUp 0.4s ease-out',
+    }}>
       {/* Handle */}
-      <div className="flex justify-center pt-2 pb-1 cursor-pointer"
-           onClick={() => setPanelHeight(panelHeight === '60vh' ? '90vh' : '60vh')}>
-        <div className="w-10 h-1 bg-gray-300 rounded-full"/>
+      <div onClick={() => setCollapsed(!collapsed)} style={{
+        display: 'flex', justifyContent: 'center',
+        paddingTop: '12px', paddingBottom: '4px',
+        cursor: 'pointer'
+      }}>
+        <div style={{
+          width: '40px', height: '4px',
+          background: '#d1d5db', borderRadius: '4px'
+        }}/>
       </div>
 
       {/* Header */}
-      <div className="px-4 pb-2 flex items-start justify-between">
+      <div style={{
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'center', padding: '8px 16px 12px'
+      }}>
         <div>
-          <h2 className="font-bold text-gray-800 text-base">
+          <div style={{ fontSize: '16px', fontWeight: '800', color: '#111827' }}>
             🗺️ {routes.length} Routes Found
-          </h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            📍 {origin?.name?.substring(0, 25)} →
-            🏁 {destination?.name?.substring(0, 25)}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <a href="tel:139"
-            className="flex items-center gap-1 bg-red-100 text-red-700
-                       px-2 py-1.5 rounded-lg text-xs font-medium">
-            🚂 139
-          </a>
-          <button onClick={clearRoutes}
-            className="p-1.5 hover:bg-gray-200 rounded-full text-gray-500">
-            ✕
-          </button>
-        </div>
-      </div>
-
-      {/* Mode Tabs */}
-      <div className="px-4 pb-2">
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {routes.map((route, i) => (
-            <ModeTab key={i} route={route}
-              isSelected={selectedRoute === route}
-              onClick={() => setSelectedRoute(route)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Selected Route Details */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        {selectedRoute && <RouteCard route={selectedRoute} />}
-
-        {/* Emergency Contacts */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl
-                        p-4 border border-blue-100 mb-3">
-          <h3 className="text-sm font-bold text-gray-800 mb-2">
-            📞 Emergency Transport Contacts
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { name: 'Indian Railways', number: '139', icon: '🚂' },
-              { name: 'Ola Cabs', number: '033-66000600', icon: '🟡' },
-              { name: 'Uber', number: '000-800-919-0191', icon: '⬛' },
-              { name: 'Police', number: '100', icon: '🚔' },
-            ].map((c, i) => (
-              <a key={i} href={`tel:${c.number}`}
-                className="flex items-center gap-2 bg-white rounded-xl px-3 py-2
-                           border border-gray-100 hover:bg-blue-50 transition-colors">
-                <span>{c.icon}</span>
-                <div>
-                  <p className="text-xs font-medium text-gray-800">{c.name}</p>
-                  <p className="text-xs text-blue-600">{c.number}</p>
-                </div>
-              </a>
-            ))}
+          </div>
+          <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
+            📍 {origin?.name?.substring(0, 20)} → 🏁 {destination?.name?.substring(0, 20)}
           </div>
         </div>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <a href="tel:139" style={{
+            background: '#fef3c7', color: '#d97706',
+            padding: '6px 12px', borderRadius: '10px',
+            fontSize: '12px', fontWeight: '700', textDecoration: 'none'
+          }}>🚂 139</a>
+          <button onClick={clearRoutes} style={{
+            background: '#fee2e2', color: '#dc2626',
+            border: 'none', borderRadius: '10px',
+            padding: '6px 12px', cursor: 'pointer',
+            fontSize: '12px', fontWeight: '700', fontFamily: 'inherit'
+          }}>✕ Close</button>
+        </div>
+      </div>
 
-        {/* All Routes Overview */}
-        {routes.length > 1 && (
-          <div className="bg-gray-50 rounded-2xl p-4 border">
-            <h3 className="text-sm font-bold text-gray-700 mb-2">
-              All Available Options
-            </h3>
-            <div className="space-y-2">
-              {routes.map((route, i) => (
-                <button key={i} onClick={() => setSelectedRoute(route)}
-                  className={`w-full flex items-center justify-between p-2 rounded-xl
-                             border transition-all text-left
-                             ${selectedRoute === route ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-white'}`}>
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">
-                      {route.subMode === 'bus' ? '🚌' :
-                       route.subMode === 'train' ? '🚂' :
-                       route.mode === 'car' ? '🚗' :
-                       route.mode === 'walk' ? '🚶' :
-                       route.mode === 'cab' ? '🚕' : '🗺️'}
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-800">{route.title}</p>
-                      <p className="text-xs text-gray-500">{route.summary}</p>
-                    </div>
-                  </div>
-                  {route.fare > 0 && (
-                    <span className="text-sm font-bold text-green-600">₹{route.fare}+</span>
-                  )}
+      {!collapsed && (
+        <>
+          {/* Route Mode Tabs */}
+          <div style={{
+            display: 'flex', gap: '8px', overflowX: 'auto',
+            padding: '0 16px 12px',
+            scrollbarWidth: 'none'
+          }}>
+            {routes.map((route, i) => {
+              const icons = {
+                bus: '🚌', train: '🚂', metro: '🚇',
+                car: '🚗', walk: '🚶', cab: '🚕', multimodal: '🗺️'
+              };
+              const icon = icons[route.subMode || route.mode] || '📍';
+              const isActive = activeRoute === i;
+
+              return (
+                <button key={i} onClick={() => handleRouteSelect(route, i)} style={{
+                  flexShrink: 0, display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', gap: '3px',
+                  padding: '8px 14px', borderRadius: '14px',
+                  border: `2px solid ${isActive ? '#3b82f6' : '#e5e7eb'}`,
+                  background: isActive ? '#eff6ff' : 'white',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                  fontFamily: 'inherit'
+                }}>
+                  <span style={{ fontSize: '20px' }}>{icon}</span>
+                  <span style={{
+                    fontSize: '10px', fontWeight: '700',
+                    color: isActive ? '#2563eb' : '#9ca3af'
+                  }}>
+                    {route.title?.split(' ').slice(0, 2).join(' ') || route.mode}
+                  </span>
+                  <span style={{
+                    fontSize: '10px', color: '#6b7280'
+                  }}>
+                    {formatMins(route.duration)}
+                  </span>
                 </button>
-              ))}
+              );
+            })}
+          </div>
+
+          {/* Selected Route Details - Scrollable */}
+          <div style={{ overflowY: 'auto', padding: '0 12px',
+                        maxHeight: 'calc(75vh - 180px)' }}>
+            {selectedRoute && (
+              <RouteCard route={selectedRoute} isSelected={true} />
+            )}
+
+            {/* Quick Contact Card */}
+            <div style={{
+              background: 'linear-gradient(135deg, #eff6ff, #f5f3ff)',
+              borderRadius: '16px', padding: '14px',
+              border: '1px solid #dbeafe', marginBottom: '12px'
+            }}>
+              <div style={{ fontSize: '13px', fontWeight: '800', color: '#1e40af', marginBottom: '10px' }}>
+                📞 Quick Transport Contacts
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {[
+                  { name: 'Indian Railways', num: '139', icon: '🚂' },
+                  { name: 'Ola Cabs', num: '033-66000600', icon: '🟡' },
+                  { name: 'KSRTC Karnataka', num: '1800-425-1900', icon: '🚌' },
+                  { name: 'Emergency', num: '112', icon: '🚨' },
+                ].map((c, i) => (
+                  <a key={i} href={`tel:${c.num}`} style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    background: 'white', borderRadius: '12px',
+                    padding: '8px 10px', textDecoration: 'none',
+                    border: '1px solid #e5e7eb',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
+                  }}>
+                    <span style={{ fontSize: '18px' }}>{c.icon}</span>
+                    <div>
+                      <div style={{ fontSize: '10px', fontWeight: '700', color: '#374151' }}>{c.name}</div>
+                      <div style={{ fontSize: '11px', color: '#2563eb', fontWeight: '600' }}>{c.num}</div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* All Routes Summary */}
+            <div style={{
+              background: '#f9fafb', borderRadius: '16px',
+              padding: '14px', border: '1px solid #e5e7eb', marginBottom: '20px'
+            }}>
+              <div style={{ fontSize: '13px', fontWeight: '800', color: '#374151', marginBottom: '10px' }}>
+                📊 All Options Compared
+              </div>
+              {routes.map((route, i) => {
+                const icons = { bus: '🚌', train: '🚂', metro: '🚇', car: '🚗', walk: '🚶', cab: '🚕' };
+                return (
+                  <button key={i} onClick={() => handleRouteSelect(route, i)} style={{
+                    width: '100%', display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', padding: '10px 12px',
+                    background: activeRoute === i ? '#eff6ff' : 'white',
+                    border: `1px solid ${activeRoute === i ? '#93c5fd' : '#e5e7eb'}`,
+                    borderRadius: '12px', marginBottom: '6px',
+                    cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit',
+                    textAlign: 'left'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '20px' }}>
+                        {icons[route.subMode || route.mode] || '📍'}
+                      </span>
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: '700', color: '#111827' }}>
+                          {route.title}
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#9ca3af' }}>
+                          {formatMins(route.duration)} • {route.bookingRequired ? 'Book Required' : 'No Booking'}
+                        </div>
+                      </div>
+                    </div>
+                    {route.fare > 0 && (
+                      <span style={{ fontSize: '14px', fontWeight: '800', color: '#059669' }}>
+                        ₹{route.fare}+
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

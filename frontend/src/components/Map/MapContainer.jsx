@@ -27,21 +27,27 @@ const MapContainer = () => {
   const { mapCenter, mapZoom } = useMap();
 
   return (
-    <LeafletMap
-      center={mapCenter}
-      zoom={mapZoom}
-      style={{ height: '100vh', width: '100%' }}
-      zoomControl={false}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <ZoomControl position="bottomright" />
-      <MapController />
-      <RouteLayer />
-      <Markers />
-    </LeafletMap>
+    <div style={{
+      position: 'fixed', top: 0, left: 0,
+      width: '100vw', height: '100vh', zIndex: 1
+    }}>
+      <LeafletMap
+        center={mapCenter}
+        zoom={mapZoom}
+        style={{ width: '100%', height: '100%' }}
+        zoomControl={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+        />
+        <ZoomControl position="bottomright" />
+        <MapController />
+        <RouteLayer />
+        <Markers />
+      </LeafletMap>
+    </div>
   );
 };
 

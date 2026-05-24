@@ -1,15 +1,13 @@
 import React from 'react';
 
-const LoadingSpinner = () => (
+const LoadingOverlay = () => (
   <div style={{
-    position: 'fixed', inset: 0,
-    zIndex: 2000,
+    position: 'fixed', inset: 0, zIndex: 2000,
     background: 'rgba(255,255,255,0.92)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
+    display: 'flex', flexDirection: 'column',
+    alignItems: 'center', justifyContent: 'center'
   }}>
+    {/* Spinning ring */}
     <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '20px' }}>
       <div style={{
         width: '80px', height: '80px',
@@ -20,8 +18,8 @@ const LoadingSpinner = () => (
       }}/>
       <div style={{
         position: 'absolute', inset: 0,
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'center', fontSize: '32px'
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '32px'
       }}>🚌</div>
     </div>
 
@@ -29,14 +27,15 @@ const LoadingSpinner = () => (
       Finding Routes...
     </div>
     <div style={{ fontSize: '13px', color: '#9ca3af', marginTop: '6px' }}>
-      Searching all transport across India
+      Searching all transport options across India
     </div>
 
-    <div style={{ display: 'flex', gap: '16px', marginTop: '20px', fontSize: '26px' }}>
+    {/* Transport icons */}
+    <div style={{ display: 'flex', gap: '16px', marginTop: '20px', fontSize: '28px' }}>
       {['🚌', '🚂', '🚇', '🛺', '🚕'].map((icon, i) => (
-        <span key={i} style={{ animation: `pulse 1.5s ${i * 0.2}s infinite` }}>
-          {icon}
-        </span>
+        <span key={i} style={{
+          animation: `pulse 1.5s ${i * 0.2}s infinite`
+        }}>{icon}</span>
       ))}
     </div>
 
@@ -50,4 +49,4 @@ const LoadingSpinner = () => (
   </div>
 );
 
-export default LoadingSpinner;
+export default LoadingOverlay;

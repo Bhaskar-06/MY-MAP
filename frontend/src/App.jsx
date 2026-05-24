@@ -1,20 +1,31 @@
 import React from 'react';
-import { MapProvider } from './context/MapContext';
+import { MapProvider, useMap } from './context/MapContext';
 import MapContainer from './components/Map/MapContainer';
-import SearchBar from './components/Search/SearchBar';
+import SearchPanel from './components/Search/SearchPanel';
 import RoutePanel from './components/Routes/RoutePanel';
-import Navbar from './components/UI/Navbar';
 import LoadingSpinner from './components/UI/LoadingSpinner';
-import { useMap } from './context/MapContext';
+import './index.css';
 
 const AppContent = () => {
   const { isLoading } = useMap();
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gray-100">
+    <div style={{
+      width: '100vw',
+      height: '100vh',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Layer 1: Map */}
       <MapContainer />
-      <Navbar />
-      <SearchBar />
+
+      {/* Layer 2: Search Panel */}
+      <SearchPanel />
+
+      {/* Layer 3: Route Results */}
       <RoutePanel />
+
+      {/* Layer 4: Loading */}
       {isLoading && <LoadingSpinner />}
     </div>
   );

@@ -1,28 +1,50 @@
 import React from 'react';
 
 const Navbar = () => (
-  <div className="absolute top-0 left-0 right-0 z-50 glass-panel shadow-md">
-    <div className="flex items-center justify-between px-4 py-2.5">
-      <div className="flex items-center gap-2">
-        <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600
-                        rounded-xl flex items-center justify-center shadow-lg">
-          <span className="text-lg">🚌</span>
-        </div>
-        <div>
-          <h1 className="text-base font-bold text-gray-800 leading-tight">
-            TransitMap India
-          </h1>
-          <p className="text-xs text-gray-500 leading-tight">
-            Public Transport for Every Destination
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-          🇮🇳 All India
-        </span>
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0,
+    zIndex: 1000,
+    background: 'white',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+    padding: '10px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  }}>
+    {/* Left: Logo + Title */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{
+        width: '40px', height: '40px',
+        background: 'linear-gradient(135deg, #1d4ed8, #7c3aed)',
+        borderRadius: '12px',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '22px',
+        boxShadow: '0 4px 12px rgba(29,78,216,0.3)'
+      }}>🚌</div>
+
+      <div>
+        <div style={{
+          fontSize: '17px', fontWeight: '800',
+          color: '#111827', lineHeight: 1.2
+        }}>TransitMap India</div>
+        <div style={{
+          fontSize: '11px', color: '#6b7280',
+          lineHeight: 1.2
+        }}>Public Transport • Every Destination</div>
       </div>
     </div>
+
+    {/* Right: Badge */}
+    <div style={{
+      background: '#dcfce7',
+      color: '#16a34a',
+      padding: '5px 12px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '700'
+    }}>🇮🇳 All India</div>
   </div>
 );
 
