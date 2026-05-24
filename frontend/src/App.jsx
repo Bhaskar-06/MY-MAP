@@ -9,9 +9,8 @@ import { useMap } from './context/MapContext';
 
 const AppContent = () => {
   const { isLoading } = useMap();
-
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden bg-gray-100">
       <MapContainer />
       <Navbar />
       <SearchBar />
@@ -21,12 +20,10 @@ const AppContent = () => {
   );
 };
 
-const App = () => {
-  return (
-    <MapProvider>
-      <AppContent />
-    </MapProvider>
-  );
-};
+const App = () => (
+  <MapProvider>
+    <AppContent />
+  </MapProvider>
+);
 
 export default App;

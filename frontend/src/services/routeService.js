@@ -5,8 +5,8 @@ const OSRM_BASE = 'https://router.project-osrm.org/route/v1';
 export const formatDuration = (seconds) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  if (hours > 0) return `${hours} hr ${minutes} min`;
-  return `${minutes} min`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
 };
 
 export const formatDistance = (meters) => {
@@ -20,26 +20,21 @@ export const getDrivingRoute = async (origin, destination) => {
     const response = await axios.get(url, {
       params: { overview: 'full', geometries: 'geojson', steps: true }
     });
-
     if (response.data.code !== 'Ok') return null;
     const route = response.data.routes[0];
-
     return {
       mode: 'car',
       duration: route.duration,
       distance: route.distance,
       geometry: route.geometry.coordinates.map(c => [c[1], c[0]]),
-      steps: route.legs[0].steps.map(step => ({
-        instruction: step.name ? `Continue on ${step.name}` : 'Continue',
-        distance: step.distance,
-        duration: step.duration,
+      steps: route.legs[0].steps.map(s => ({
+        instruction: s.name ? `Continue on ${s.name}` : 'Continue',
+        distance: s.distance, duration: s.duration,
       })),
       summary: `${formatDuration(route.duration)} • ${formatDistance(route.distance)}`,
+      fare: Math.round(route.distance / 1000 * 12),
     };
-  } catch (error) {
-    console.error('Driving route error:', error);
-    return null;
-  }
+  } catch { return null; }
 };
 
 export const getWalkingRoute = async (origin, destination) => {
@@ -48,24 +43,19 @@ export const getWalkingRoute = async (origin, destination) => {
     const response = await axios.get(url, {
       params: { overview: 'full', geometries: 'geojson', steps: true }
     });
-
     if (response.data.code !== 'Ok') return null;
     const route = response.data.routes[0];
-
     return {
       mode: 'walk',
       duration: route.duration,
       distance: route.distance,
       geometry: route.geometry.coordinates.map(c => [c[1], c[0]]),
-      steps: route.legs[0].steps.map(step => ({
-        instruction: step.name ? `Walk along ${step.name}` : 'Continue walking',
-        distance: step.distance,
-        duration: step.duration,
+      steps: route.legs[0].steps.map(s => ({
+        instruction: s.name ? `Walk along ${s.name}` : 'Continue walking',
+        distance: s.distance, duration: s.duration,
       })),
       summary: `${formatDuration(route.duration)} • ${formatDistance(route.distance)}`,
+      fare: 0,
     };
-  } catch (error) {
-    console.error('Walking route error:', error);
-    return null;
-  }
+  } catch { return null; }
 };

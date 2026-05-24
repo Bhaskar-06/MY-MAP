@@ -9,14 +9,17 @@ export const MapProvider = ({ children }) => {
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [mapCenter, setMapCenter] = useState([12.2958, 76.6394]);
-  const [mapZoom, setMapZoom] = useState(10);
-  const [busStops, setBusStops] = useState([]);
+  const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // India center
+  const [mapZoom, setMapZoom] = useState(5);
   const [showPanel, setShowPanel] = useState(false);
+  const [error, setError] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
 
   const clearRoutes = useCallback(() => {
     setRoutes([]);
     setSelectedRoute(null);
+    setShowPanel(false);
+    setError(null);
   }, []);
 
   return (
@@ -29,8 +32,9 @@ export const MapProvider = ({ children }) => {
       isLoading, setIsLoading,
       mapCenter, setMapCenter,
       mapZoom, setMapZoom,
-      busStops, setBusStops,
       showPanel, setShowPanel,
+      error, setError,
+      userLocation, setUserLocation,
       clearRoutes,
     }}>
       {children}
