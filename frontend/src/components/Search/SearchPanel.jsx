@@ -245,13 +245,13 @@ const SearchPanel = () => {
     setIsMinimized(true);
   };
 
-  const modes = [
-    { id: 'transit', icon: '🚌', label: 'Transit', color: '#9c27b0' },
-    { id: 'train', icon: '🚂', label: 'Train', color: '#f44336' },
-    { id: 'car', icon: '🚗', label: 'Drive', color: '#2196f3' },
-    { id: 'walk', icon: '🚶', label: 'Walk', color: '#4caf50' },
-    { id: 'all', icon: '🗺️', label: 'All', color: '#ff9800' },
-  ];
+const modes = [
+  { id: 'transit', icon: '🚌', label: 'Transit', color: '#9c27b0' },
+  { id: 'train', icon: '🚂', label: 'Train', color: '#f44336' },
+  { id: 'car', icon: '🚗', label: 'Car', color: '#1565c0' },
+  { id: 'bike', icon: '🏍️', label: 'Bike', color: '#e65100' },
+  { id: 'all', icon: '🗺️', label: 'All', color: '#ff9800' },
+];
 
   return (
     <>
